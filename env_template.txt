@@ -1,0 +1,11 @@
+# OpenAI API Configuration Template
+# 
+# INSTRUCTIONS:
+# 1. Create a file named ".env" in this directory
+# 2. Copy the line below into that file
+# 3. Replace 'your_api_key_here' with your actual OpenAI API key
+# 4. The .env file is already in .gitignore and will NOT be committed to git
+#
+# Example .env file content:
+OPENAI_API_KEY=your_api_key_here
+
