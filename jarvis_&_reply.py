@@ -512,9 +512,9 @@ def system_health_check():
 
 name = memory.get("name")
 if name:
-    speak(f"Welcome back, {name}. Standing by.")
+    speak(f"Welcome back, {name}. JARVIS system online and ready. I can help you manage your laptop, check system status, open applications, and much more. How may I assist you?")
 else:
-    speak("System online. Standing by.")
+    speak("JARVIS system online and ready. I am your personal assistant and can help you manage your laptop. I can check system information, open applications, control power settings, manage files, take screenshots, and more. How may I assist you today?")
 
 while True:
     command = listen()
