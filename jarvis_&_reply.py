@@ -196,6 +196,7 @@ def speak(text):
     engine.runAndWait()
 
 def listen(timeout=None):
+    r = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening...")
         audio = r.listen(source, timeout=timeout)
