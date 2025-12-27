@@ -1,171 +1,346 @@
 
 
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>JARVIS HUD</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <title>JARVIS Sci-Fi Animated HUD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(135deg, #181c24 0%, #232b39 100%);
-      color: #f6f6f6;
-      font-family: 'Orbitron', 'Share Tech Mono', monospace, sans-serif;
+      background: #0a1820;
+      color: #eafcff;
+      font-family: 'Share Tech Mono', monospace, sans-serif;
       overflow: hidden;
     }
-    .city-bg {
-      position: absolute;
+    .hud-outer {
       width: 100vw;
       height: 100vh;
-      left: 0; top: 0;
-      z-index: 0;
-      background: url('https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=1500&q=80') center/cover no-repeat;
-      opacity: 0.08;
-      filter: blur(2px);
-    }
-    .hud {
-      position: relative;
-      z-index: 2;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-    }
-    .center-hud {
       position: relative;
-      width: 420px;
-      height: 420px;
-      margin-bottom: 30px;
+    }
+    .danger {
+      position: absolute;
+      left: 40px;
+      top: 30px;
+      color: #00eaff;
+      font-size: 2.2em;
+      font-weight: bold;
+      letter-spacing: 8px;
+      text-shadow: 0 0 16px #00eaff, 0 0 32px #fff;
+      opacity: 0.7;
+      z-index: 10;
+      animation: dangerpulse 1.2s infinite alternate;
+    }
+    @keyframes dangerpulse {
+      0% { opacity: 0.7; }
+      100% { opacity: 1; text-shadow: 0 0 32px #00eaff, 0 0 64px #fff; }
+    }
+    .hud-center {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      margin-bottom: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
+      z-index: 2;
     }
-    .circle-hud {
-      width: 320px;
-      height: 320px;
-      border-radius: 50%;
-      background: rgba(24,28,36,0.7);
-      box-shadow: 0 0 60px 10px #00f6ff44, 0 0 120px 20px #ff7b00aa inset;
-      border: 4px solid #ff7b00;
+    .hud-svg {
+      position: absolute;
+      left: 0; top: 0;
+      width: 600px;
+      height: 400px;
+      z-index: 1;
+      filter: drop-shadow(0 0 24px #00eaffcc);
+    }
+    .hud-data {
+      position: absolute;
+      left: 30px;
+      top: 40px;
+      color: #eafcff;
+      font-size: 1.1em;
+      background: rgba(10,24,32,0.7);
+      border: 1.5px solid #00eaffaa;
+      border-radius: 8px;
+      padding: 12px 24px;
+      box-shadow: 0 0 12px #00eaff33;
+      z-index: 2;
+      letter-spacing: 1.5px;
+    }
+    .hud-data.right {
+      left: unset;
+      right: 30px;
+      top: 40px;
+      border-color: #fff8;
+      color: #fff;
+      background: rgba(10,24,32,0.5);
+    }
+    .hud-hand {
+      position: absolute;
+      right: 40px;
+      top: 120px;
+      width: 90px;
+      height: 90px;
+      background: rgba(10,24,32,0.7);
+      border: 2px solid #00eaffcc;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      box-shadow: 0 0 16px #00eaff55;
+    }
+    .hud-hand svg {
+      width: 60px;
+      height: 60px;
+      filter: drop-shadow(0 0 8px #00eaff);
+    }
+    .hud-rings {
       position: absolute;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: pulse 2.5s infinite alternate;
+      width: 340px;
+      height: 340px;
+      z-index: 2;
+      pointer-events: none;
     }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 60px 10px #00f6ff44, 0 0 120px 20px #ff7b0044 inset; }
-      100% { box-shadow: 0 0 90px 20px #00f6ff88, 0 0 180px 40px #ff7b00cc inset; }
-    }
-    .circle-inner {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      border: 2px solid #00f6ff;
-      box-shadow: 0 0 30px 5px #00f6ff55;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.2);
-    }
-    .center-dot {
-      width: 36px;
-      height: 36px;
-      background: #ff7b00;
-      border-radius: 50%;
-      box-shadow: 0 0 40px 10px #ff7b00cc;
-      border: 2px solid #fff2;
-      animation: glow 1.5s infinite alternate;
-    }
-    @keyframes glow {
-      0% { box-shadow: 0 0 40px 10px #ff7b00cc; }
-      100% { box-shadow: 0 0 60px 20px #ff7b00ff; }
-    }
-    .hud-panels {
-      display: flex;
-      gap: 24px;
-      margin-top: 10px;
-      z-index: 3;
-    }
-    .panel {
-      background: rgba(24,28,36,0.85);
-      border: 2px solid #00f6ff44;
-      border-radius: 16px;
-      box-shadow: 0 0 12px 2px #00f6ff22;
-      padding: 18px 32px;
-      min-width: 160px;
+    .hud-percent {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
       color: #fff;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 1.1em;
-      text-align: center;
-      letter-spacing: 1.5px;
-    }
-    .hud-controls {
-      display: flex;
-      gap: 18px;
-      margin-top: 30px;
-      z-index: 3;
-    }
-    .hud-btn {
-      background: linear-gradient(90deg, #ff7b00 0%, #ffb347 100%);
-      color: #181c24;
-      border: none;
-      border-radius: 8px;
-      padding: 12px 32px;
-      font-size: 1.1em;
-      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5em;
       font-weight: bold;
-      box-shadow: 0 0 10px #ff7b00aa;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
+      text-shadow: 0 0 16px #00eaff, 0 0 32px #fff;
+      z-index: 3;
+      text-align: center;
+      letter-spacing: 2px;
     }
-    .hud-btn:hover {
-      background: linear-gradient(90deg, #00f6ff 0%, #ff7b00 100%);
+    .hud-percent .sub {
+      font-size: 0.5em;
+      color: #00eaff;
+      letter-spacing: 1px;
+    }
+    .hud-panel {
+      position: absolute;
+      left: 60px;
+      bottom: 60px;
+      width: 180px;
+      background: rgba(10,24,32,0.7);
+      border: 1.5px solid #00eaffaa;
+      border-radius: 8px;
+      padding: 10px 18px;
+      color: #eafcff;
+      font-size: 1em;
+      box-shadow: 0 0 12px #00eaff33;
+      z-index: 2;
+    }
+    .hud-panel.right {
+      left: unset;
+      right: 60px;
+      bottom: 60px;
+      border-color: #fff8;
       color: #fff;
+      background: rgba(10,24,32,0.5);
+    }
+    .hud-waveform {
+      position: absolute;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      width: 400px;
+      height: 60px;
+      z-index: 2;
+      background: rgba(10,24,32,0.6);
+      border: 1.5px solid #00eaffaa;
+      border-radius: 8px;
+      box-shadow: 0 0 12px #00eaff33;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .status-bar {
-      margin-top: 40px;
-      letter-spacing: 3px;
-      opacity: 0.95;
-      font-size: 1.3em;
-      text-shadow: 0 0 10px #00f6ff, 0 0 20px #ff7b00;
-      font-family: 'Orbitron', 'Share Tech Mono', sans-serif;
-      border: 2px solid #00f6ff44;
-      border-radius: 8px;
-      padding: 10px 32px;
-      background: rgba(0,246,255,0.07);
-      box-shadow: 0 0 20px 2px #00f6ff22;
-      text-align: center;
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 44px;
+      background: #0a1820ee;
+      border-top: 2px solid #00eaff33;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      z-index: 10;
+      box-shadow: 0 0 12px #00eaff22;
+    }
+    .status-icon {
+      width: 26px;
+      height: 26px;
+      margin: 0 4px;
+      filter: drop-shadow(0 0 4px #00eaffcc);
+    }
+    .status-label {
+      color: #eafcff;
+      font-size: 1em;
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: 2px;
+      margin-left: 12px;
+      margin-right: 12px;
+      text-shadow: 0 0 8px #00eaff, 0 0 8px #fff;
     }
   </style>
 </head>
 <body>
-  <div class="city-bg"></div>
-  <div class="hud">
-    <div class="center-hud">
-      <div class="circle-hud">
-        <div class="circle-inner">
-          <div class="center-dot"></div>
-        </div>
+  <div class="hud-outer">
+    <div class="danger">DANGER</div>
+    <div class="hud-center">
+      <!-- Animated SVG Rings -->
+      <svg class="hud-rings" viewBox="0 0 340 340">
+        <circle cx="170" cy="170" r="150" stroke="#00eaff99" stroke-width="2.5" fill="none" stroke-dasharray="20 10"/>
+        <circle cx="170" cy="170" r="120" stroke="#fff8" stroke-width="2" fill="none" stroke-dasharray="8 8"/>
+        <circle cx="170" cy="170" r="90" stroke="#00eaffcc" stroke-width="3" fill="none"/>
+        <circle cx="170" cy="170" r="60" stroke="#fff8" stroke-width="1.5" fill="none"/>
+        <g id="dots">
+          <circle cx="170" cy="40" r="5" fill="#00eaff"/>
+          <circle cx="300" cy="170" r="4" fill="#fff"/>
+          <circle cx="170" cy="300" r="3" fill="#00eaff"/>
+          <circle cx="40" cy="170" r="4" fill="#fff"/>
+        </g>
+      </svg>
+      <div class="hud-percent">
+        75%<br><span class="sub">SYSTEM LOAD</span>
+        <br>69%<span class="sub"> / 99%</span>
       </div>
+      <div class="hud-data">DATA FEED<br>Active: <span style="color:#fff;">103</span></div>
+      <div class="hud-data right">ALERTS<br>Critical: <span style="color:#fff;">2</span></div>
+      <div class="hud-panel">PROCESSING<br>Speed: <span style="color:#fff;">2.4GHz</span></div>
+      <div class="hud-panel right">MEMORY<br>Usage: <span style="color:#fff;">8.2GB</span></div>
+      <div class="hud-hand">
+        <svg viewBox="0 0 60 60">
+          <ellipse cx="30" cy="30" rx="25" ry="25" fill="none" stroke="#00eaff" stroke-width="2"/>
+          <path d="M30 10 Q32 20 30 30 Q28 40 30 50" stroke="#00eaff" stroke-width="2" fill="none"/>
+          <path d="M30 10 Q28 20 30 30 Q32 40 30 50" stroke="#00eaff" stroke-width="2" fill="none"/>
+          <circle cx="30" cy="20" r="2" fill="#fff"/>
+        </svg>
+      </div>
+      <div class="hud-waveform">
+        <svg width="380" height="40">
+          <polyline id="wave" points="0,20 20,10 40,30 60,15 80,25 100,10 120,30 140,20 160,10 180,30 200,15 220,25 240,10 260,30 280,20 300,10 320,30 340,15 360,25 380,20" fill="none" stroke="#00eaff" stroke-width="2"/>
+        </svg>
+      </div>
+      <svg class="hud-svg" viewBox="0 0 600 400">
+        <!-- Overlay grid and widgets -->
+        <g stroke="#00eaff33">
+          <line x1="0" y1="200" x2="600" y2="200"/>
+          <line x1="300" y1="0" x2="300" y2="400"/>
+          <rect x="20" y="20" width="560" height="360" fill="none"/>
+        </g>
+        <g stroke="#fff2">
+          <rect x="60" y="60" width="120" height="60" fill="none"/>
+          <rect x="420" y="60" width="120" height="60" fill="none"/>
+        </g>
+      </svg>
     </div>
-    <div class="hud-panels">
-      <div class="panel">CPU: 23%</div>
-      <div class="panel">RAM: 48%</div>
-      <div class="panel">DISK: 61%</div>
+    <div class="status-bar">
+      <img class="status-icon" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f50c.svg" title="Power"/>
+      <img class="status-icon" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f50b.svg" title="Battery"/>
+      <img class="status-icon" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4f6.svg" title="WiFi"/>
+      <span class="status-label">HUD ONLINE</span>
+      <img class="status-icon" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f512.svg" title="Secure"/>
+      <img class="status-icon" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f514.svg" title="Notifications"/>
     </div>
-    <div class="hud-controls">
-      <button class="hud-btn">Activate</button>
-      <button class="hud-btn">Shutdown</button>
-      <button class="hud-btn">Settings</button>
-    </div>
-    <div class="status-bar">SYSTEM ONLINE</div>
   </div>
+  <script>
+    // Animate SVG rings
+    let ring1 = document.querySelector('.hud-rings circle:nth-child(1)');
+    let ring2 = document.querySelector('.hud-rings circle:nth-child(2)');
+    let dots = document.querySelectorAll('#dots circle');
+    let angle = 0;
+    setInterval(() => {
+      angle += 2;
+      ring1.setAttribute('transform', `rotate(${angle} 170 170)`);
+      ring2.setAttribute('transform', `rotate(${-angle*1.5} 170 170)`);
+      // Animate dots
+      dots.forEach((dot, i) => {
+        let a = angle + i*90;
+        let r = 150;
+        let x = 170 + r * Math.cos(a * Math.PI/180);
+        let y = 170 + r * Math.sin(a * Math.PI/180);
+        dot.setAttribute('cx', x);
+        dot.setAttribute('cy', y);
+      });
+    }, 40);
+    // Animate waveform
+    let wave = document.getElementById('wave');
+    let base = [20,10, 40,30, 60,15, 80,25, 100,10, 120,30, 140,20, 160,10, 180,30, 200,15, 220,25, 240,10, 260,30, 280,20, 300,10, 320,30, 340,15, 360,25, 380,20];
+    let t = 0;
+    setInterval(() => {
+      t += 0.1;
+      let pts = '0,20 ';
+      for(let i=0;i<base.length;i+=2){
+        let y = base[i+1] + 8*Math.sin(t+i/2);
+        pts += `${base[i]},${y} `;
+      }
+      wave.setAttribute('points', pts+ '380,20');
+    }, 60);
+
+    // LIVE DATA: Fetch and update HUD
+    function updateHUD(data) {
+      // Percentages
+      const percentDiv = document.querySelector('.hud-percent');
+      if (data.cpu && data.memory && data.disk) {
+        percentDiv.innerHTML = `
+          ${data.cpu.replace(/[^0-9.]/g, '') || '75'}%<br><span class="sub">SYSTEM LOAD</span>
+          <br>${data.memory.replace(/[^0-9.]/g, '') || '69'}%<span class="sub"> / ${data.disk.replace(/[^0-9.]/g, '') || '99'}%</span>
+        `;
+      }
+      // Data feed
+      const dataFeed = document.querySelector('.hud-data');
+      if (dataFeed && data.time) {
+        dataFeed.innerHTML = `DATA FEED<br>Time: <span style="color:#fff;">${data.time}</span>`;
+      }
+      // Alerts
+      const alerts = document.querySelector('.hud-data.right');
+      if (alerts && data.battery) {
+        alerts.innerHTML = `ALERTS<br>Battery: <span style="color:#fff;">${data.battery}</span>`;
+      }
+      // Processing
+      const proc = document.querySelector('.hud-panel');
+      if (proc && data.cpu) {
+        proc.innerHTML = `PROCESSING<br>CPU: <span style="color:#fff;">${data.cpu}</span>`;
+      }
+      // Memory
+      const mem = document.querySelector('.hud-panel.right');
+      if (mem && data.memory) {
+        mem.innerHTML = `MEMORY<br>Usage: <span style="color:#fff;">${data.memory}</span>`;
+      }
+      // Status bar
+      const statusLabel = document.querySelector('.status-label');
+      if (statusLabel && data.internet) {
+        statusLabel.textContent = data.internet || 'HUD ONLINE';
+      }
+    }
+
+    async function fetchStatus() {
+      try {
+        const res = await fetch('/api/status');
+        if (!res.ok) return;
+        const data = await res.json();
+        updateHUD(data);
+      } catch (e) {}
+    }
+    setInterval(fetchStatus, 2000);
+    fetchStatus();
+  </script>
 </body>
 </html>
