@@ -1,3 +1,4 @@
+from JarvisAI.core.voice_ai import speak
 from textblob import TextBlob
 personality = {
     "mood": "calm",  # calm, happy, sassy, serious
@@ -218,9 +219,6 @@ def get_alexa_like_response(user_input, intent):
     personality["mood"] = mood
     return get_personalized_response(intent)
 
-def speak(text):
-    engine.say(text)
-    engine.runAndWait()
 
 def listen(timeout=None):
     r = sr.Recognizer()
