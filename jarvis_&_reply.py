@@ -57,10 +57,29 @@ def get_personalized_response(intent, **kwargs):
 from openai import OpenAI
 import json
 import os
-from dotenv import load_dotenv
-
 # Load environment variables from .env file
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    # Try to load .env file explicitly
+    env_path = os.path.join(os.path.dirname(__file__), '.env')
+    if os.path.exists(env_path):
+        load_dotenv(dotenv_path=env_path, encoding='utf-8')
+    else:
+        load_dotenv()  # Try default location
+except Exception as e:
+    print(f"Warning: Could not load .env file: {e}")
+    # Try manual reading as fallback
+    try:
+        env_path = os.path.join(os.path.dirname(__file__), '.env')
+        if os.path.exists(env_path):
+            with open(env_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        key, value = line.split('=', 1)
+                        os.environ[key.strip()] = value.strip()
+    except Exception as e2:
+        print(f"Warning: Could not manually read .env file: {e2}")
 
 # Get API key from environment variable
 api_key = os.getenv("OPENAI_API_KEY")
@@ -166,7 +185,9 @@ import glob
 from pathlib import Path
 
 engine = pyttsx3.init()
-r = sr.Recognizer()
+engine.setProperty('rate', 175)
+
+
 
 WAKE_WORD = "bread"
 
@@ -211,6 +232,7 @@ APP_COMMANDS = {
 
 def open_application(app_name):
     """Open an application based on app name"""
+
     app_name_lower = app_name.lower().strip()
     
     # Try to find the app in our mapping
@@ -251,6 +273,7 @@ def restart_system():
 def sleep_system():
     """Put the system to sleep"""
     os.system("shutdown /h")  # Hibernate (sleep)
+    
 
 # ========== SYSTEM MONITORING FUNCTIONS ==========
 
