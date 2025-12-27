@@ -1,3 +1,4 @@
+from textblob import TextBlob
 personality = {
     "mood": "calm",  # calm, happy, sassy, serious
     "greeting_style": "polite",  # casual, funny, formal
@@ -172,6 +173,16 @@ def get_intent(command):
             if word in command:
                 return intent
     return None
+
+def add_to_memory(user_input, response):
+    memory = load_memory()
+    history = memory.get("conversation_history", [])
+    history.append({"user": user_input, "jarvis": response})
+    # Limit history to last 1000 exchanges for performance
+    if len(history) > 1000:
+        history = history[-1000:]
+    memory["conversation_history"] = history
+    save_memory(memory)
 import speech_recognition as sr
 import pyttsx3
 import datetime
@@ -191,6 +202,22 @@ engine.setProperty('rate', 175)
 
 WAKE_WORD = "bread"
 
+def analyze_sentiment(text):
+    from textblob import TextBlob
+    blob = TextBlob(text)
+    polarity = blob.sentiment.polarity
+    if polarity > 0.3:
+        return "happy"
+    elif polarity < -0.3:
+        return "sassy"
+    else:
+        return "calm"
+
+def get_alexa_like_response(user_input, intent):
+    mood = analyze_sentiment(user_input)
+    personality["mood"] = mood
+    return get_personalized_response(intent)
+
 def speak(text):
     engine.say(text)
     engine.runAndWait()
@@ -199,11 +226,21 @@ def listen(timeout=None):
     r = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening...")
-        audio = r.listen(source, timeout=timeout)
-    try:
-        return r.recognize_google(audio).lower()
-    except:
-        return ""
+        r.adjust_for_ambient_noise(source, duration=1)
+        try:
+            audio = r.listen(source, timeout=timeout)
+            text = r.recognize_google(audio).lower()
+            print(f"Recognized: {text}")
+            return text
+        except sr.WaitTimeoutError:
+            print("Listening timed out.")
+            return ""
+        except sr.UnknownValueError:
+            print("Could not understand audio.")
+            return ""
+        except sr.RequestError as e:
+            print(f"Could not request results; {e}")
+            return ""
 
 # Application mapping for Windows
 APP_COMMANDS = {
@@ -547,7 +584,14 @@ while True:
 
     ai_result = ask_ai(command)
     intent = ai_result["intent"]
-    response = ai_result["response"]
+    # Use Alexa-like response logic for supported intents
+    if intent in personality["responses"]:
+        response = get_alexa_like_response(command, intent)
+    else:
+        response = ai_result["response"]
+
+    # Store conversation in memory
+    add_to_memory(command, response)
 
     # handle actions safely
     if intent == "calculator":
